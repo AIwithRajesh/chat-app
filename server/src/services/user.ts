@@ -11,20 +11,39 @@ export interface userInterface {
   email: string;
   passwordHash: string;
   salt: string;
-  phoneNumber: number;
+  phoneNumber: string;
 }
 
-interface GetUserTokenPayload {
+export interface GetUserTokenPayload {
   email: string;
   password: string;
 }
 
 class UserService {
-  private static generateHash(salt: string, password: string) {
+  public static generateHash(salt: string, password: string) {
     const hashedPassword = createHmac("sha256", salt)
       .update(password)
       .digest("hex");
     return hashedPassword;
+  }
+
+  public static async saveRefreshToken(
+    userId: number,
+    refreshToken: string
+  ): Promise<void> {
+    await prismaClient.user.update({
+      where: { id: userId },
+      data: { refreshToken },
+    });
+  }
+
+  public static async getRefreshToken(userId: number): Promise<string | null> {
+    const user = await prismaClient.user.findUnique({
+      where: { id: userId },
+      select: { refreshToken: true },
+    });
+
+    return user?.refreshToken || null;
   }
 
   public static createUser(payload: userInterface) {
@@ -46,7 +65,7 @@ class UserService {
     });
   }
 
-  private static getUserByEmail(email: string) {
+  public static getUserByEmail(email: string) {
     return prismaClient.user.findUnique({ where: { email } });
   }
 

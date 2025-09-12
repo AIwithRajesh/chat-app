@@ -4,10 +4,12 @@ import cors from "cors";
 import { gqlserver } from "./graphql/index.ts";
 import http from "http";
 import { initSocket } from "./socket/socket.ts";
+import cookieParser from "cookie-parser";
 
 const PORT = process.env.PORT || 8080;
 
 const app = express();
+app.use(cookieParser());
 
 const httpServer = http.createServer(app);
 

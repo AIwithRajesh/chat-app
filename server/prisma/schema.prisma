@@ -22,6 +22,7 @@ model User {
   phoneNumber  String           @unique
   passwordHash String
   salt         String
+  refreshToken String?
   avatarUrl    String?
   createdAt    DateTime         @default(now())
 

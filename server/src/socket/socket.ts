@@ -3,6 +3,7 @@ import http from "http";
 
 export function initSocket(server: http.Server) {
   const io = new SocketIOServer(server, {
+    path: "/api/socket_io",
     cors: {
       origin: "*",
       methods: ["GET", "POST"],
