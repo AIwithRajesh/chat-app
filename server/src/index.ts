@@ -1,27 +1,28 @@
 import { expressMiddleware } from "@as-integrations/express5";
 import express from "express";
-import { Server } from "socket.io";
 import cors from "cors";
-import { server } from "./graphql/index.js";
+import { gqlserver } from "./graphql/index.ts";
+import http from "http";
+import { initSocket } from "./socket/socket.ts";
 
-const PORT = process.env.PORT || 8000;
-const io = new Server({});
-
-io.on("connection", (socket) => {
-  console.log(socket);
-});
+const PORT = process.env.PORT || 8080;
 
 const app = express();
+
+const httpServer = http.createServer(app);
+
+const io = initSocket(httpServer);
+// console.log("io", io);
 
 app.use(
   "/graphql",
   cors<cors.CorsRequest>(),
   express.json(),
-  expressMiddleware(server, {
+  expressMiddleware(gqlserver, {
     context: async ({ req }) => ({ token: req.headers.token }),
   })
 );
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log("app is running on port ", PORT);
 });

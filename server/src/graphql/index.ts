@@ -1,17 +1,10 @@
 import { ApolloServer } from "@apollo/server";
+import { typeDefs } from "./modules/user/typeDefs.ts";
+import { resolvers } from "./modules/user/resolvers.ts";
 
-interface MyContext {
-  token?: string;
-}
-
-export const server = new ApolloServer<MyContext>({
-  typeDefs: `type Query {
-    hello: String!
-  }`,
-  resolvers: {
-    Query: {
-      hello: () => "Hello GraphQL 🚀",
-    },
-  },
+export const gqlserver = new ApolloServer({
+  typeDefs: [typeDefs],
+  resolvers: [resolvers],
 });
-await server.start();
+
+await gqlserver.start();
