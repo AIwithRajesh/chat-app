@@ -42,21 +42,21 @@ export class AuthService {
 
     res.cookie("token", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // true in prod
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return { message: "Login successful" };
   }
 
   public static async refreshToken(req: Request, res: Response) {
-    const refreshToken = req.cookies.refresh_token;
+    const refreshToken = req?.cookies?.refresh_token;
 
     if (!refreshToken) throw new Error("Refresh token not found");
 
@@ -66,7 +66,6 @@ export class AuthService {
         email: string;
       };
 
-      // Optional: Check if refresh token exists in DB
       const savedToken = await UserService.getRefreshToken(payload.id);
       if (savedToken !== refreshToken) {
         throw new Error("Invalid refresh token");

@@ -1,14 +1,18 @@
 import { gql } from "graphql-tag";
-import UserService from "../../../services/user.ts";
+import { AuthService } from "../../../services/authService.ts";
+import type { Request, Response } from "express";
 
 export const queries = {
   Query: {
     hello: () => "Hello GraphQL 🚀",
     getUserToken: async (
       _: any,
-      payload: { email: string; password: string }
+      payload: { email: string; password: string },
+      context: { req: Request; res: Response }
     ) => {
-      const token = await UserService.getUserToken(payload);
+      if (!context.res)
+        throw new Error("Response object is missing in context");
+      const token = await AuthService.getUserToken(payload, context.res);
 
       return token;
     },
