@@ -5,6 +5,9 @@ import { gqlserver } from "./graphql/index.ts";
 import http from "http";
 import { initSocket } from "./socket/socket.ts";
 import cookieParser from "cookie-parser";
+import JWT from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET || "@JWT_TOKEN";
 
 const PORT = process.env.PORT || 8080;
 
@@ -17,6 +20,7 @@ const io = initSocket(httpServer);
 
 interface MyContext {
   token?: string;
+  userId: any;
 }
 // app.use(
 //   cors({
@@ -34,10 +38,27 @@ app.use(
   express.json(),
   expressMiddleware(gqlserver, {
     context: async ({ req, res }): Promise<MyContext & { res: any }> => {
-      return {
-        token: req.headers.token as string,
-        res, // <-- pass the response object
-      };
+      const token = req.cookies.token as string;
+      console.log("token", token);
+      let userId = null;
+
+      if (token) {
+        try {
+          const payload = JWT.verify(token, JWT_SECRET) as { id: number };
+          userId = payload.id;
+        } catch (err) {
+          console.error("Invalid token:", err);
+        }
+      }
+
+      console.log("Cookies:", req.cookies); // Should show token here
+      console.log("Token:", token, "UserId:", userId);
+
+      return { token, userId, res };
+      // return {
+      //   token: req.cookies.token as string,
+      //   res, // <-- pass the response object
+      // };
     },
   })
 );

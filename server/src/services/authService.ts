@@ -52,7 +52,11 @@ export class AuthService {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return { message: "Login successful" };
+    return {
+      message: "Login successful",
+      userId: user.id,
+      name: `${user.firstName} ${user.lastName}`,
+    };
   }
 
   public static async refreshToken(req: Request, res: Response) {

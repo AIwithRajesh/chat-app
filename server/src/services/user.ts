@@ -68,6 +68,25 @@ class UserService {
   public static getUserByEmail(email: string) {
     return prismaClient.user.findUnique({ where: { email } });
   }
+
+  static async getUserListWithConversation(currentUserId: number) {
+    if (!currentUserId) throw new Error("User not authenticated");
+
+    console.log("Current User ID:", currentUserId);
+
+    return prismaClient.user.findMany({
+      where: { id: { not: currentUserId } },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        username: true,
+        email: true,
+        avatarUrl: true,
+      },
+      orderBy: { firstName: "asc" },
+    });
+  }
 }
 
 export default UserService;
