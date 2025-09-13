@@ -14,14 +14,31 @@ app.use(cookieParser());
 const httpServer = http.createServer(app);
 
 const io = initSocket(httpServer);
-// console.log("io", io);
+
+interface MyContext {
+  token?: string;
+}
+// app.use(
+//   cors({
+//     origin: "http://localhost:3000",
+//     credentials: true,
+//   })
+// );
 
 app.use(
   "/graphql",
-  cors<cors.CorsRequest>(),
+  cors({
+    origin: "http://localhost:3000", // your frontend URL
+    credentials: true, // allow cookies
+  }),
   express.json(),
   expressMiddleware(gqlserver, {
-    context: async ({ req }) => ({ token: req.headers.token }),
+    context: async ({ req, res }): Promise<MyContext & { res: any }> => {
+      return {
+        token: req.headers.token as string,
+        res, // <-- pass the response object
+      };
+    },
   })
 );
 
