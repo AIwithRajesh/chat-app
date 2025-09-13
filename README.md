@@ -32,8 +32,6 @@ authentication, and Docker-based deployment.
 
     ├── client/       # Frontend (Next.js)
     ├── server/       # Backend (Node.js + GraphQL + Express)
-    ├── docker-compose.yml
-    ├── .env         # Environment variables (Postgres, JWT secrets, etc.)
     └── README.md
 
 ------------------------------------------------------------------------
